@@ -11,4 +11,4 @@ Student Info
 
 * Student Name: NGUYEN ANH QUAN
 * Student ID: BI12-365
-
+* Class: Data Science
