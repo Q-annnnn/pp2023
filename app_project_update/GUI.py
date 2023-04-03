@@ -38,7 +38,7 @@ class GUI:
         self.save_printer = Button(self.frame_left, text="Add a new printer ", highlightthickness=0, bg="#fbfbfb", command=self.save_data,bd=0).place(x=33, y=76, width=175, height=36)
         self.update_printer = Button(self.frame_left, text="Update a printer", highlightthickness=0, bg="#fbfbfb", command=self.update_data,bd=0).place(x=33, y=146, width=175, height=36)
         self.delete_printer = Button(self.frame_left, text="Delete a printer", highlightthickness=0, bg="#fbfbfb", command=self.delete_data,bd=0).place(x=33, y=216, width=175, height=36)
-        self.maint_check = Button(self.frame_left, text="Maintenance Checking", highlightthickness=0, bg="#fbfbfb", command=self,bd=0).place(x=33, y=286, width=175, height=36)
+        self.maint_check = Button(self.frame_left, text="Maintenance Checking", highlightthickness=0, bg="#fbfbfb", command=self.check_maintenance,bd=0).place(x=33, y=286, width=175, height=36)
         self.reset_printer = Button(self.frame_left, text="Reset", highlightthickness=0, fg="#ffffff", bg="#fb5870", command=self.delete_all_data, bd=0).place(x=33, y=356, width=175, height=36)
         Button(self.frame_left, text="Sign out", highlightthickness=0, fg="#ffffff", bg="#fb5870", command=self.signout, bd=0).place(x=33, y=665, width=175, height=36)
         
@@ -115,7 +115,7 @@ class GUI:
         scroll_x = Scrollbar(self.bottom_frame, orient=HORIZONTAL)
         scroll_y = Scrollbar(self.bottom_frame, orient=VERTICAL)
 
-        columns = ('ID', 'name', 'manufacturer', 'model', 'serial_num', 'firmware_vers', 'calibration', "usage_count")
+        columns = ('ID', 'name', 'manufacturer', 'model', 'serial_num', 'firmware_vers', 'calibration', "usage_count", 'maintenance')
         self.printer_list = ttk.Treeview(self.bottom_frame, height=12,
                                            columns=columns,
                                            xscrollcommand=scroll_x.set,
@@ -138,9 +138,8 @@ class GUI:
         self.printer_list.heading('firmware_vers', text='Firmware')
         self.printer_list.heading('calibration', text='Calibration')
         self.printer_list.heading('usage_count', text = "Usage (times)")
+        self.printer_list.heading('maintenance', text='Maintenance')
 
-
-        self.printer_list['show'] = 'headings'
         self.printer_list.column('ID', width=20)
         self.printer_list.column('name', width=70)
         self.printer_list.column('manufacturer', width=50)
@@ -149,7 +148,8 @@ class GUI:
         self.printer_list.column('firmware_vers', width=20)
         self.printer_list.column('calibration', width=70)
         self.printer_list.column('usage_count', width=60)
-        self.printer_list.pack(fill=BOTH, expand=1)
+        self.printer_list.column('maintenance', width = 70)
+        self.printer_list.config(show = "headings")
 
         self.printer_list.bind('<ButtonRelease-1>', self.clicker)
         self.display_data()
@@ -297,4 +297,10 @@ class GUI:
                         self.printer_list.insert("", END, value=i)
             except:
                 tkinter.messagebox.showwarning("Warning", "Please choose the attribute!")
+    def check_maintenance(self):
+        for printer in self.account.printers:
+            if printer.usage_count > 10:
+                self.treeview.set(printer.name, 'maintenance', 'Needs Maintenance')
+            else:
+                self.treeview.set(printer.name, 'maintenance', 'OK')
 
